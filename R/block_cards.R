@@ -1,78 +1,80 @@
 #' Specify the components of an article
 #'
-#' The `article()` function is used exclusively within `block_articles()`,
+#' The `info_card()` function is used exclusively within `block_cards()`,
 #' and having one, two, or three calls will arrange the articles in a row (or as
 #' a column of articles at lower screen widths).
 #'
-#' @param image An optional URL pointing to an image resource.
 #' @param title An optional title for the article.
-#' @param content An optional paragraph of text for the article.
-#' @param link An optional link to apply to the content elements.
+#' @param value ...
+#' @param caption ...
+#' @param color ...
+#' @param background_color ...
+#' @param icon An optional icon ...
+#' @param fill ...
+#' @param height ...
+#' @param background_position ...
+#' @param link ...
 #'
 #' @examples
-#' # We can define an article with a link
-#' # to an image, title text, some content,
+#' # We can define an info card with an icon
+#' # title text, some content,
 #' # and a link to relevant content
-#' article <-
-#'   article(
-#'     image = "https://i.imgur.com/dxSXzGb.jpg",
-#'     title = "Hong Kong",
-#'     content =
-#'       "Once home to fishermen and farmers, \\
-#'       modern Hong Kong is a teeming, \\
-#'       commercially-vibrant metropolis where \\
-#'       Chinese and Western influences fuse.",
-#'     link = "http://www.discoverhongkong.com"
-#'   )
+#' card <-
+#'      info_card(value = 45, icon = "phone", fill = "white",
+#'                caption = "Articles per Day", color = "white",
+#'                background_color = "rgba(39, 128, 227, 0.7)",
+#'                link = "http://www.google.de"),
 #'
 #' if (interactive()) article
 #' @export
-article <- function(image = NULL, title = NULL, content = NULL, link = NULL) {
+info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black",
+                      background_color = "white", icon = NULL, fill = "white",
+                      height = 60, background_position = "90% 50%", link = NULL)  {
+
   maybe_link <- function(...) {
     if (is.null(link)) {
-      tagList(...)
-    } else {
-      tags$a(.noWS = c("after-begin", "before-end"), href = link,
-             style = css(text_decoration = "none"),
-             ...
-      )
+      tags$div(...)
     }
+    else {
+      tags$a(href = link,
+             ...)
+    }}
+
+
+  if (!is.null(icon) && requireNamespace("fontawesome", quietly = TRUE)) {
+
+    temp <- tempfile(pattern = "", fileext = ".png")
+
+    fontawesome::fa_png(name = icon, file = temp, fill = fill, height = height)
+
+    img <- paste0("url(",blastula:::get_image_uri(file = temp),")")
+
+    custom_css <- htmltools::css(background_image = img,
+                                 background_repeat = "no-repeat",
+                                 background_position = background_position
+    )
+  } else {
+    custom_css <- NULL
   }
 
-  tagList(
-    if (!is.null(image)) {
-      tags$div(style = css(margin_bottom = "12px"),
-               maybe_link(
-                 tags$img(
-                   src = image,
-                   width = "100%",
-                   # Height is hardcoded to 200 because on Outlook 2019 for Windows,
-                   # the image https://i.imgur.com/5aJawp2.jpg would show up as a
-                   # horizontal sliver if height was not included OR set to "auto" OR
-                   # set to 0. Bizarrely, if height is set to ANY POSITIVE VALUE, the
-                   # img displays at the CORRECT natural height (as if height="auto")
-                   # (and again, I only saw this with that particular image, though
-                   # other seemingly-similar images https://i.imgur.com/18fcpkZ.jpg
-                   # and https://i.imgur.com/gpVMFcW.jpg had no such problem.)
-                   height = 200,
-                   style = css(
-                     height = "auto !important"
-                   )
-                 )
-               )
-      )
-    },
-    if (!is.null(title)) {
-      tags$h3(style = css(margin = 0), maybe_link(title))
-    },
-    if (!is.null(content)) {
-      tags$div(content)
-    }
-  )
+  htmltools::tagList(
+    maybe_link(class = "value-box",
+               style = htmltools::css(text_decoration = "none",
+                                      color = color,
+                                      background_color = background_color,
+                                      border_radius =  "3px",
+                                      # position = "relative",
+                                      display = "block",
+                                      box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
+               htmltools::tags$div(class = "inner",
+                                   style = custom_css,
+                                   htmltools::tags$p(class = "value", value),
+                                   htmltools::tags$p(class = "caption", caption))))
+
 }
 
-# To allow articles to be snapshot tested using testthat::verify_output
-print.article <- function(x, ...) {
+# To allow info cards to be snapshot tested using testthat::verify_output
+print.info_card <- function(x, ...) {
   print(x(NULL))
 }
 
@@ -123,7 +125,7 @@ block_cards <- function (...) {
   pct <- round(100/length(x))
 
   htmltools::div(class = "message-block block_cards",
-     htmltools::tags$table(class = "articles",
+     htmltools::tags$table(class = "cards",
                            cellspacing = "0",
                            cellpadding = "0",
                            width = "100%",
@@ -139,7 +141,7 @@ block_cards <- function (...) {
                                                max_width = "12px !important",
                                                min_width = "12px !important")))
                                          },
-                                         htmltools::tags$td(class = "card",
+                                         htmltools::tags$td(class = "cards",
                                                             width = paste0(pct, "%"), cards))
                                        })
                                        )
