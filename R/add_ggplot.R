@@ -97,3 +97,58 @@ add_ggplot <- function(plot_object,
 
   # nocov end
 }
+
+
+
+
+add_ggplot_uri <- function(plot_object,
+                       width = 1.5,
+                       height = 1,
+                       alt = NULL,
+                       crop = TRUE,
+                       align = c("center", "left", "right", "inline"),
+                       float = c("none", "left", "right")) {
+
+  # nocov start
+
+  tmpfile <- tempfile("ggplot", fileext = ".png")
+
+  # If the `ggplot2` package is available, then
+  # use the `ggplot2::ggsave()` function
+  if (requireNamespace("ggplot2", quietly = TRUE)) {
+
+    ggplot2::ggsave(
+      device = "png",
+      plot = plot_object,
+      filename = tmpfile,
+      dpi = 200,
+      width = width,
+      height = height)
+
+  } else {
+    stop("Please ensure that the `ggplot2` package is installed before using `add_ggplot()`.",
+         call. = FALSE)
+  }
+
+  if (crop == TRUE) {
+
+    tmpimg <- magick::image_trim(magick::image_read(tmpfile))
+    magick::image_write(tmpimg, tmpfile)
+
+  }
+
+
+  on.exit(file.remove(tmpfile), add = TRUE)
+
+  # Determine alt text
+  alt_text <-
+    if (is.null(alt)) {
+      plot_object$labels$title
+    } else {
+      alt
+    }
+
+ get_image_uri(file = tmpfile)
+
+  # nocov end
+}

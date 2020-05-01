@@ -1,4 +1,4 @@
-#' Specify the components of an article
+#' Specify the components of an info card
 #'
 #' The `info_card()` function is used exclusively within `block_cards()`,
 #' and having one, two, or three calls will arrange the articles in a row (or as
@@ -41,9 +41,11 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
     }}
 
 
-  if (!is.null(icon) && requireNamespace("fontawesome", quietly = TRUE)) {
+  if (!is.null(icon)) {
 
-    temp <- tempfile(pattern = "", fileext = ".png")
+    if(requireNamespace("fontawesome", quietly = TRUE)) {
+
+    temp <- tempfile(pattern = "icon", fileext = ".png")
 
     fontawesome::fa_png(name = icon, file = temp, fill = fill, height = height)
 
@@ -53,7 +55,14 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
                                  background_repeat = "no-repeat",
                                  background_position = background_position
     )
-  } else {
+
+    on.exit(file.remove(temp), add = TRUE)
+
+    } else {
+        stop("Please ensure that the `fontawesome` package is installed before using the `icon` argument.",
+             call. = FALSE)
+  }} else {
+
     custom_css <- NULL
   }
 
@@ -63,7 +72,6 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
                                       color = color,
                                       background_color = background_color,
                                       border_radius =  "3px",
-                                      # position = "relative",
                                       display = "block",
                                       box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
                htmltools::tags$div(class = "inner",
@@ -77,6 +85,76 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
 print.info_card <- function(x, ...) {
   print(x(NULL))
 }
+
+#' Specify the components of a plot card
+#'
+#' The `info_card()` function is used exclusively within `block_cards()`,
+#' and having one, two, or three calls will arrange the articles in a row (or as
+#' a column of articles at lower screen widths).
+#'
+#' @param title An optional title for the article.
+#' @param value ...
+#' @param caption ...
+#' @param color ...
+#' @param background_color ...
+#' @param icon An optional icon ...
+#' @param fill ...
+#' @param height ...
+#' @param background_position ...
+#' @param link ...
+#'
+#' @examples
+#' # We can define an info card with an icon
+#' # title text, some content,
+#' # and a link to relevant content
+#' card <-
+#'      info_card(value = 45, icon = "phone", fill = "white",
+#'                caption = "Articles per Day", color = "white",
+#'                background_color = "rgba(39, 128, 227, 0.7)",
+#'                link = "http://www.google.de"),
+#'
+#' if (interactive()) article
+#' @export
+ggplot_card <- function(title = NULL, plot = NULL, caption = NULL, color = "#000",
+                        background_color = "white", alt = NULL,
+                        height = 80, link = NULL)  {
+
+  maybe_link <- function(...) {
+    if (is.null(link)) {
+      tags$div(...)
+    }
+    else {
+      tags$a(href = link,
+             ...)
+    }}
+
+  alt_text <-
+    if (is.null(alt)) {
+      plot$labels$title
+    } else {
+      alt
+    }
+
+  htmltools::tagList(
+    maybe_link(class = "plot-box",
+               style = htmltools::css(text_decoration = "none",
+                                      color = color,
+                                      background_color = background_color,
+                                      border_radius =  "3px",
+                                      display = "block",
+                                      box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
+               if (!is.null(title)) {
+                   htmltools::p(class = "title", title)} ,
+               htmltools::img(src = add_ggplot_uri(plot),
+                              alt = alt_text,
+                              height = height),
+               if (!is.null(title)) {
+                   htmltools::p(class = "caption", caption)}
+               )
+                 )
+}
+
+
 
 #' A block of one, two, or three cards with a multicolumn layout
 #'
@@ -118,7 +196,7 @@ print.info_card <- function(x, ...) {
 #' if (interactive()) email
 #'
 #' @export
-block_cards <- function (...) {
+block_cards <- function(...) {
 
   x <- list(...)
 
@@ -142,7 +220,8 @@ block_cards <- function (...) {
                                                min_width = "12px !important")))
                                          },
                                          htmltools::tags$td(class = "cards",
-                                                            width = paste0(pct, "%"), cards))
+                                                            width = paste0(pct, "%"),
+                                                            cards))
                                        })
                                        )
                  )
