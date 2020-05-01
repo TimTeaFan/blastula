@@ -72,7 +72,7 @@ blastula_template <- function(html_body, html_header, html_footer, title, conten
               display: block;
               width: 100%;
             }
-            .cards, .cards tr, .cards td, .value-box, .inner {
+            tbody, .cards, .cards tr, .cards td, .value-box, .inner {
               display: block !important;
               width: 100% !important;
             }
