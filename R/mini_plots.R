@@ -1,6 +1,6 @@
 # mini plots to be used with plot_card
 
-donut <- function(value, color = "grey", thick = "s", label = "percent", label_color = NULL, label_size = 12, label_round = 0) {
+donut <- function(value, color = "white", thick = "s", label = "percent", label_color = NULL, label_size = 12, label_round = 0) {
 
   if (is.character(thick)) {
     thick <- switch(thick,

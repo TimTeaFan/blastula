@@ -50,6 +50,7 @@ block_title <- function(title) {
   tags$h1(class = "message-block block_title",
     style = css(
       color = "#222222",
+      # background_color = "white",
       font_weight = "300",
       line_height = "1.4",
       margin = "0",

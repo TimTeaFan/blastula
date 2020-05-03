@@ -102,8 +102,8 @@ add_ggplot <- function(plot_object,
 
 
 add_ggplot_uri <- function(plot_object,
-                       width = 1.5,
-                       height = 1,
+                       width = 1.3,
+                       height = 1.3,
                        alt = NULL,
                        crop = TRUE,
                        align = c("center", "left", "right", "inline"),

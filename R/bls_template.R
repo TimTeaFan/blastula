@@ -19,12 +19,28 @@
 #' @return A string containing a complete HTML document.
 #'
 #' @export
-blastula_template <- function(html_body, html_header, html_footer, title, content_width = "1000px",
-                              font_family = "Helvetica, sans-serif", body_background_color = "#f6f6f6", border_radius = "0px",
-                              content_background_color = "white", body_color = "#222", header_color = "#999999",
-                              header_font_size = "12px", header_font_weight = "normal", header_margin = "0 0 24px 0",
-                              header_text_align = "center", footer_color = "#999999", footer_font_size = "12px",
-                              footer_font_weight = "normal", footer_margin = "24px 0 0 0", footer_text_align = "center") {
+blastula_template <- function(html_body,
+                              html_header,
+                              html_footer,
+                              title,
+                              content_width = "1000px",
+                              font_family = "Helvetica, sans-serif",
+                              body_background_color = "#f6f6f6",
+                              border_radius = "0px",
+                              content_background_color = "white",
+                              body_color = "#222",
+                              header_color = "#999999",
+                              header_font_size = "12px",
+                              header_font_weight = "normal",
+                              header_margin = "0 0 24px 0",
+                              header_text_align = "center",
+                              footer_color = "#999999",
+                              footer_font_size = "12px",
+                              footer_font_weight = "normal",
+                              footer_margin = "24px 0 0 0",
+                              footer_text_align = "center",
+                              title_background = "white",
+                              title_border_radius = "0px 0px 0px 0px") {
   result <- htmltools::renderTags(
     htmltools::tagList(
       htmltools::tags$head(
@@ -47,12 +63,23 @@ blastula_template <- function(html_body, html_header, html_footer, title, conten
           }
           img {
             max-width: 100%;
+            text-align: center;
+          }
+          h1 {
+            background-color:", title_background, ";
+            border-radius:", title_border_radius, ";
+          }
+          .value-box {
+            min-height: 100px;
+          }
+          .plots {
+            min-height: 150px;
           }
           .value-box > .inner{
             padding: 10px;
             padding-top: 15px;
-            padding-left: 20px;
-            padding-right: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
           }
           .value-box .value {
             font-size: 38px;
@@ -72,9 +99,13 @@ blastula_template <- function(html_body, html_header, html_footer, title, conten
               display: block;
               width: 100%;
             }
-            tbody, .cards, .cards tr, .cards td, .value-box, .inner {
+            tbody, .cards, .cards tr, .cards td {
               display: block !important;
               width: 100% !important;
+            }
+            .value-box > .inner{
+              padding-left: 20px;
+              padding-right: 20px;
             }
           .article {
             margin-bottom: 24px;
