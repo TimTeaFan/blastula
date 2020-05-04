@@ -66,18 +66,31 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
       custom_css <- NULL
     }
 
-  htmltools::tagList(
-    maybe_link(class = "value-box",
-               style = htmltools::css(text_decoration = "none",
-                                      color = color,
-                                      background_color = background_color,
-                                      border_radius =  "3px",
-                                      display = "block",
-                                      box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
-               htmltools::tags$div(class = "inner",
-                                   style = custom_css,
-                                   htmltools::tags$p(class = "value", value),
-                                   htmltools::tags$p(class = "caption", caption))))
+  # 1 add icon (use above)
+  # 2 add caption icon (arrow-up, arrow-down, arrow-right)
+  # 3 font size and padding
+  # 4 add link (use maybe link)
+
+  div(class = "value-box",
+      style = htmltools::css(text_decoration = "none",
+                             color = color,
+                             background_color = background_color,
+                             border_radius =  "3px",
+                             box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
+      tags$table(class = "card", cellspacing = "0", cellpadding = "0", width = "100%",
+                 if (!is.null(title)) {
+                   tags$tr(tags$td(title))
+                 },
+                 tags$tr(
+                   tags$td(width = "auto",
+                           value),
+                   tags$td(width = "40px",
+                           "image")
+                 ),
+                 if (!is.null(caption)) {
+                   tags$tr(tags$td(caption))
+                 })
+  )
 
 }
 
@@ -121,26 +134,19 @@ info_card_old <- function(title = NULL, value = NULL, caption = NULL, color = "b
       custom_css <- NULL
     }
 
-  div(class = "value-box",
-      style = htmltools::css(text_decoration = "none",
-                             color = color,
-                             background_color = background_color,
-                             border_radius =  "3px",
-                             box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
-      tags$table(class = "card", cellspacing = "0", cellpadding = "0", width = "100%",
-                 if (!is.null(title)) {
-                   tags$tr(title)
-                   },
-                 tags$tr(
-                   tags$td(width = "auto",
-                           value),
-                   tags$td(width = "40px",
-                           "image")
-                   ),
-                if (!is.null(caption)) {
-                  tags$tr(caption)
-                  })
-      )
+  htmltools::tagList(
+    maybe_link(class = "value-box",
+               style = htmltools::css(text_decoration = "none",
+                                      color = color,
+                                      background_color = background_color,
+                                      border_radius =  "3px",
+                                      display = "block",
+                                      box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
+               htmltools::tags$div(class = "inner",
+                                   style = custom_css,
+                                   htmltools::tags$p(class = "value", value),
+                                   htmltools::tags$p(class = "caption", caption)))
+    )
 }
 
 # To allow info cards to be snapshot tested using testthat::verify_output

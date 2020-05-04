@@ -95,7 +95,7 @@ blastula_template <- function(html_body,
             .container {
                width: 100%;
              }
-            .articles, .articles tr, .articles td {
+            tbody, .articles, .articles tr, .articles td {
               display: block;
               width: 100%;
             }
