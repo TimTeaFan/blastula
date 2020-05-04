@@ -1,18 +1,19 @@
 # mini plots to be used with plot_card
 
-donut <- function(value, color = "white", thick = "s", label = "percent", label_color = NULL, label_size = 12, label_round = 0) {
+donut <- function(value, color = "white", thick = "m", label = "percent", label_color = NULL, label_size = 8, label_round = 0) {
 
   if (is.character(thick)) {
     thick <- switch(thick,
-           xs = -2,
-           s  = 0,
-           m  = 1,
-           l  = 2,
+           xs = 4,
+           s  = 7,
+           m  = 8,
+           l  = 9,
+           xl = 10,
            NULL)
   }
 
-  if(is.null(thick) || thick > 2) {
-    stop("`thick` takes either a character vector of length == 1 specifying the size ('xs', 's', 'm', 'l') or a numeric value under 2")
+  if(is.null(thick) || thick >= 10) {
+    stop("`thick` takes either a character vector of length == 1 specifying the size ('xs', 's', 'm', 'l', 'xl') or a numeric value < 11")
   }
 
   if (is.null(label_color)) {
@@ -50,7 +51,7 @@ donut <- function(value, color = "white", thick = "s", label = "percent", label_
 
   data$ymin = c(0, head(data$ymax, n = -1))
 
-  # label
+  # Label
   if (label == "percent") {
 
     label <- paste0(round(data$fraction[[1]] * 100, label_round), "%")
@@ -70,14 +71,24 @@ donut <- function(value, color = "white", thick = "s", label = "percent", label_
 
   if (requireNamespace("ggplot2", quietly = TRUE)) {
 
-    ggplot2::ggplot(data, ggplot2::aes(ymax = ymax, ymin = ymin, xmax = 4, xmin = 3, fill = category)) +
+    ggplot2::ggplot(data, ggplot2::aes(ymax = ymax, ymin = ymin, xmax = 12, xmin = 11, fill = category)) +
       ggplot2::geom_rect() +
       ggplot2::scale_fill_manual(values = c(color, "transparent"), guide = FALSE) +
       ggplot2::coord_polar(theta = "y") +
-      ggplot2::xlim(c(thick, 4)) +
-      ggplot2::annotate("text", x = thick, y = 0, label = label, size = label_size, colour = label_color) +
+      ggplot2::xlim(c(thick, 12)) +
+      ggplot2::annotate("text", x = thick, y = 0, label = label, size = label_size, colour = label_color, fontface = "bold") +
       ggplot2::theme_void() +
       ggplot2::theme(plot.margin = grid::unit(c(0,0,0,0), "mm"))
+                     # panel.background = ggplot2::element_rect(fill = "blue"),
+                     # strip.background = ggplot2::element_rect(colour=NA, fill="blue"),
+                     # plot.background = ggplot2::element_rect(fill = "blue", color = NA), # bg of the plot
+                     # panel.grid.major = ggplot2::element_blank(), # get rid of major grid
+                     # panel.grid.minor = ggplot2::element_blank(), # get rid of minor grid
+                     # legend.background = ggplot2::element_rect(fill = "blue"), # get rid of legend bg
+                     # legend.box.background = ggplot2::element_rect(fill = "blue"), # get rid of legend panel bg
+                     # legend.key = ggplot2::element_rect(fill = "blue", colour = NA), # get rid of key legend fill, and of the surrounding
+                     # axis.line = ggplot2::element_line(colour = "blue")
+                     # )
 
   } else {
     stop("Please ensure that the `ggplot2` package is installed before using `donut()`.",

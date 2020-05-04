@@ -56,7 +56,7 @@ blastula_template <- function(html_body,
             border-radius:", border_radius,";
           }", "
           .content .message-block {
-            margin-bottom: 24px;
+            margin-bottom: 12px;
           }
           .header .message-block, .footer message-block {
             margin-bottom: 12px;
@@ -65,17 +65,20 @@ blastula_template <- function(html_body,
             max-width: 100%;
             text-align: center;
           }
+          p {
+            margin: 0 0 0 0 !important;
+          }
           h1 {
             background-color:", title_background, ";
             border-radius:", title_border_radius, ";
           }
-          .value-box {
+          /*.value-box {
             min-height: 100px;
-          }
-          .plots {
+          }*/
+          .plot-box {
             min-height: 150px;
           }
-          .value-box > .inner{
+          /*.value-box > .inner{
             padding: 10px;
             padding-top: 15px;
             padding-left: 10px;
@@ -87,10 +90,7 @@ blastula_template <- function(html_body,
             margin: 0 0 3px 0;
             white-space: nowrap;
             padding: 0;
-          }
-          p {
-            margin: 0 0 10.5px;
-          }
+          }*/
           @media only screen and (max-width: 767px) {
             .container {
                width: 100%;
@@ -103,10 +103,10 @@ blastula_template <- function(html_body,
               display: block !important;
               width: 100% !important;
             }
-            .value-box > .inner{
+            /*.value-box > .inner{
               padding-left: 20px;
               padding-right: 20px;
-            }
+            }*/
           .article {
             margin-bottom: 24px;
             }

@@ -121,6 +121,7 @@ add_ggplot_uri <- function(plot_object,
       device = "png",
       plot = plot_object,
       filename = tmpfile,
+      bg = "transparent",
       dpi = 200,
       width = width,
       height = height)
