@@ -54,7 +54,7 @@ blastula_template <- function(html_body,
           .content {
             background-color: white;
             border-radius:", border_radius,";
-          }", "
+          }
           .content .message-block {
             margin-bottom: 12px;
           }
@@ -68,29 +68,32 @@ blastula_template <- function(html_body,
           p {
             margin: 0 0 0 0 !important;
           }
+          p.value {
+            font-weight: bold;
+            padding-top: 3px;
+            padding-bottom: 5px;
+          }
+          img.icon {
+            padding-top: 5px;
+            padding-bottom: 10px;
+          }
+          img.arrow_cap {
+            padding-right: 5px;
+          }
           h1 {
             background-color:", title_background, ";
             border-radius:", title_border_radius, ";
           }
-          /*.value-box {
-            min-height: 100px;
-          }*/
           .plot-box {
             min-height: 150px;
           }
-          /*.value-box > .inner{
-            padding: 10px;
-            padding-top: 15px;
+          .value-box {
+            padding-bottom: 3px;
+            padding-top: 10px;
             padding-left: 10px;
             padding-right: 10px;
+            min-height: 93px !important;
           }
-          .value-box .value {
-            font-size: 38px;
-            font-weight: bold;
-            margin: 0 0 3px 0;
-            white-space: nowrap;
-            padding: 0;
-          }*/
           @media only screen and (max-width: 767px) {
             .container {
                width: 100%;

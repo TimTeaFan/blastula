@@ -27,9 +27,19 @@
 #'
 #' if (interactive()) article
 #' @export
-info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black",
-                      background_color = "white", icon = NULL, fill = "white",
-                      height = 60, background_position = "90% 50%", link = NULL)  {
+info_card <- function(title = NULL,
+                      value = NULL,
+                      value_size = "38px",
+                      icon = NULL,
+                      icon_fill = "white",
+                      icon_width = 40,
+                      delta = NULL,
+                      caption = NULL,
+                      arrow = NULL,
+                      arrow_fill = "auto",
+                      color = "black",
+                      background_color = "white",
+                      link = NULL)  {
 
   maybe_link <- function(...) {
     if (is.null(link)) {
@@ -47,26 +57,53 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
 
       temp <- tempfile(pattern = "icon", fileext = ".png")
 
-      fontawesome::fa_png(name = icon, file = temp, fill = fill, height = height)
+      fontawesome::fa_png(name = icon, file = temp, fill = icon_fill, width = icon_width)
 
-      img <- paste0("url(",get_image_uri(file = temp),")")
+      uri <- get_image_uri(file = temp)
 
-      custom_css <- htmltools::css(background_image = img,
-                                   background_repeat = "no-repeat",
-                                   background_position = background_position
-      )
+      img <- tags$img(class = "icon",
+                      src = uri,
+                      alt = paste0("icon_", icon),
+                      width = icon_width,
+                      align = "right")
 
       on.exit(file.remove(temp), add = TRUE)
 
     } else {
       stop("Please ensure that the `fontawesome` package is installed before using the `icon` argument.",
            call. = FALSE)
-    }} else {
+    }}
 
-      custom_css <- NULL
+
+  if (!is.null(arrow)) {
+
+    if (arrow_fill == "auto") {
+
+      arrow_fill <- switch(as.character(sign(delta)),
+                           `-1` = "#E30000",
+                           `1` = "#00B916",
+                           `0` = "#A7A7A7")
     }
 
-  # 1 add icon (use above)
+    add_sign <- switch(arrow_fill,
+                       "#E30000" = "-",
+                       "#00B916" = "+",
+                       NULL)
+
+    tmparrw <- tempfile(pattern = "arrow", fileext = ".png")
+
+    arrw <- fontawesome::fa_png(name = paste0("arrow-", arrow), file = tmparrw, fill = arrow_fill, width = 15)
+
+    uri <- get_image_uri(file = tmparrw)
+
+    arr_icon <- tags$img(class = "arrow_cap",
+                         src = uri,
+                         alt = paste0("arrow-", arrow),
+                         width = 15,
+                         align = "left",
+                         vertical_align = "middle")
+  }
+
   # 2 add caption icon (arrow-up, arrow-down, arrow-right)
   # 3 font size and padding
   # 4 add link (use maybe link)
@@ -78,17 +115,41 @@ info_card <- function(title = NULL, value = NULL, caption = NULL, color = "black
                              border_radius =  "3px",
                              box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
       tags$table(class = "card", cellspacing = "0", cellpadding = "0", width = "100%",
+                 # empty row to use colspan in outlook
+                 tags$tr(
+                   tags$td(
+                   if (!is.null(icon)) {
+                     tags$td(width = "50px")}
+                   )
+                 ),
                  if (!is.null(title)) {
-                   tags$tr(tags$td(title))
+                   tags$tr(tags$th(width = "100%",
+                                   colspan = "2",
+                                   align = "left",
+                                   title)
+                           )
                  },
                  tags$tr(
-                   tags$td(width = "auto",
-                           value),
-                   tags$td(width = "40px",
-                           "image")
+                   tags$td(class = "value",
+                           tags$p(class = "value",
+                                  style = htmltools::css(font_size = value_size),
+                                  value)),
+                   if (!is.null(icon)) {
+                   tags$td(width = "50px",
+                           img)}
                  ),
-                 if (!is.null(caption)) {
-                   tags$tr(tags$td(caption))
+                 if (!(is.null(arrow) && is.null(delta) && is.null(caption))) {
+                   tags$tr(
+                     tags$td(class = "caption",
+                             width = "100%",
+                             colspan = "2",
+                             if (!is.null(arrow)) {
+                                arr_icon},
+                             if (!is.null(delta)) {
+                               tags$b(paste0(add_sign, delta))},
+                             if (!is.null(caption)) {
+                               caption}
+                                   ))
                  })
   )
 
@@ -199,6 +260,10 @@ block_cards <- function(...) {
 
   x <- list(...)
 
+  if (any(unlist(lapply(x, function(.x) grepl('class="caption"', .x))))) {
+    min_height <- 90
+  } else { min_height <- 75 }
+
   pct <- round(100/length(x))
 
   htmltools::div(class = "message-block block_cards",
@@ -206,6 +271,7 @@ block_cards <- function(...) {
                            cellspacing = "0",
                            cellpadding = "0",
                            width = "100%",
+
                            htmltools::tags$tr(lapply(seq_along(x), function(i) {
                            cards <- x[[i]]
                            htmltools::tagList(if (i != 1) {
