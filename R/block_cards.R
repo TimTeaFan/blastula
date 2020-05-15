@@ -37,8 +37,8 @@ info_card <- function(title = NULL,
                       caption = NULL,
                       arrow = NULL,
                       arrow_fill = "auto",
-                      color = "black",
-                      background_color = "white",
+                      color = "#000000",
+                      background_color = "#FFFFFF",
                       link = NULL)  {
 
   maybe_link <- function(...) {
@@ -108,13 +108,16 @@ info_card <- function(title = NULL,
   # 3 font size and padding
   # 4 add link (use maybe link)
 
-  div(class = "value-box",
-      style = htmltools::css(text_decoration = "none",
-                             color = color,
-                             background_color = background_color,
-                             border_radius =  "3px",
-                             box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)"),
-      tags$table(class = "card", cellspacing = "0", cellpadding = "0", width = "100%",
+      tags$table(class = "value-box",
+                 bgcolor = background_color,
+                 width = "100%",
+                 style = htmltools::css(text_decoration = "none",
+                   border_radius =  "3px",
+                   box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)",
+                   cellspacing = "0",
+                   cellpadding = "0",
+                   color = color),
+
                  # empty row to use colspan in outlook
                  tags$tr(
                    tags$td(
@@ -151,7 +154,134 @@ info_card <- function(title = NULL,
                                caption}
                                    ))
                  })
-  )
+
+
+}
+
+
+info_card2 <- function(title = NULL,
+                      value = NULL,
+                      value_size = "38px",
+                      icon = NULL,
+                      icon_fill = "white",
+                      icon_width = 40,
+                      icon_height = 50,
+                      icon_position = "90% 50%",
+                      delta = NULL,
+                      caption = NULL,
+                      arrow = NULL,
+                      arrow_fill = "auto",
+                      color = "#000000",
+                      background_color = "#FFFFFF",
+                      link = NULL)  {
+
+  maybe_link <- function(...) {
+    if (is.null(link)) {
+      tags$div(...)
+    }
+    else {
+      tags$a(href = link,
+             ...)
+    }}
+
+
+  if (!is.null(icon)) {
+
+    if(requireNamespace("fontawesome", quietly = TRUE)) {
+
+      temp <- tempfile(pattern = "icon", fileext = ".png")
+
+      fontawesome::fa_png(name = icon, file = temp, fill = icon_fill, height = icon_height)
+
+      img <- paste0("url(",get_image_uri(file = temp),")")
+
+      custom_css <- htmltools::css(background_image = img,
+                                   background_repeat = "no-repeat",
+                                   background_position = icon_position
+      )
+
+      on.exit(file.remove(temp), add = TRUE)
+
+    } else {
+      stop("Please ensure that the `fontawesome` package is installed before using the `icon` argument.",
+           call. = FALSE)
+    }} else {
+
+      custom_css <- NULL
+    }
+
+
+  if (!is.null(arrow)) {
+
+    if (arrow_fill == "auto") {
+
+      arrow_fill <- switch(as.character(sign(delta)),
+                           `-1` = "#E30000",
+                           `1` = "#00B916",
+                           `0` = "#A7A7A7")
+    }
+
+    add_sign <- switch(arrow_fill,
+                       "#E30000" = "-",
+                       "#00B916" = "+",
+                       NULL)
+
+    tmparrw <- tempfile(pattern = "arrow", fileext = ".png")
+
+    arrw <- fontawesome::fa_png(name = paste0("arrow-", arrow), file = tmparrw, fill = arrow_fill, width = 15)
+
+    uri <- get_image_uri(file = tmparrw)
+
+    arr_icon <- tags$img(class = "arrow_cap",
+                         src = uri,
+                         alt = paste0("arrow-", arrow),
+                         width = 15,
+                         align = "left",
+                         vertical_align = "middle")
+  }
+
+  # 2 add caption icon (arrow-up, arrow-down, arrow-right)
+  # 3 font size and padding
+  # 4 add link (use maybe link)
+
+  tags$table(class = "value-box",
+             bgcolor = background_color,
+             width = "100%",
+             style = paste0(htmltools::css(text_decoration = "none",
+                                           border_radius =  "3px",
+                                           box_shadow = "2px 2px 2px rgba(0, 0, 0, 0.2)",
+                                           cellspacing = "0",
+                                           cellpadding = "0",
+                                           color = color),
+                                           custom_css),
+
+             if (!is.null(title)) {
+               tags$tr(tags$th(width = "100%",
+                               colspan = "2",
+                               align = "left",
+                               title)
+               )
+             },
+             tags$tr(
+               tags$td(class = "value",
+                       tags$p(class = "value",
+                              style = htmltools::css(font_size = value_size),
+                              value))
+             ),
+             if (!(is.null(arrow) && is.null(delta) && is.null(caption))) {
+               tags$tr(
+                 tags$td(class = "caption",
+                         width = "100%",
+                         colspan = "2",
+                         if (!is.null(arrow)) {
+                           arr_icon},
+                         if (!is.null(delta)) {
+                           tags$b(paste0(add_sign, delta))},
+                         if (!is.null(caption)) {
+                           caption}
+                 ))
+             })
+
 
 }
 

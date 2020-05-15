@@ -9,6 +9,8 @@ panel <- function(..., width = "100%", outer_align = NULL, inner_align = NULL,
   padding = NULL, margin = NULL, outer_class = NULL, inner_class = NULL,
   background_color = NULL, max_width = NULL) {
 
+  tagList(
+    HTML(paste0("<!--[if gte mso 9]><table width='",max_width, "' cellpadding='0' cellspacing='0'><tr><td><![endif]-->")),
   tags$table(width = width, align = outer_align, class = outer_class,
     style = css(
       margin = margin,
@@ -23,5 +25,7 @@ panel <- function(..., width = "100%", outer_align = NULL, inner_align = NULL,
         ...
       )
     )
+  ),
+  HTML("<!--[if gte mso 9]></td></tr></table><![endif]-->"),
   )
 }

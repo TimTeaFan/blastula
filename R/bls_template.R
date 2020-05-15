@@ -80,6 +80,9 @@ blastula_template <- function(html_body,
           img.arrow_cap {
             padding-right: 5px;
           }
+          /*img.img_article {
+          margin_bottom: 12px;
+          }*/
           h1 {
             background-color:", title_background, ";
             border-radius:", title_border_radius, ";
@@ -88,13 +91,13 @@ blastula_template <- function(html_body,
             min-height: 150px;
           }
           .value-box {
-            padding-bottom: 3px;
-            padding-top: 10px;
-            padding-left: 10px;
-            padding-right: 10px;
-            min-height: 93px !important;
+            padding-bottom: 5px;
+            padding-top: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
           }
           @media only screen and (max-width: 767px) {
+
             .container {
                width: 100%;
              }
@@ -106,10 +109,6 @@ blastula_template <- function(html_body,
               display: block !important;
               width: 100% !important;
             }
-            /*.value-box > .inner{
-              padding-left: 20px;
-              padding-right: 20px;
-            }*/
           .article {
             margin-bottom: 24px;
             }
